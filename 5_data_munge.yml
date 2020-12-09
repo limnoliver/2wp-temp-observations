@@ -3,6 +3,7 @@ target_default: 5_data_munge
 packages:
   - scipiper
   - dplyr
+<<<<<<< HEAD
   - maps
   - sf
 
@@ -10,12 +11,29 @@ sources:
   - 5_data_munge/src/munge_data_files.R
   - 5_data_munge/src/munge_wqp_files.R
 
+=======
+  - tidyverse
+  
+sources:
+  - 5_data_munge/src/munge_data_files.R
+  - 5_data_munge/src/munge_wqp_files.R
+  - 5_data_munge/src/qaqc_daily_data.R
+  - 5_data_munge/src/qaqc_groups_summaries.R
+  
+>>>>>>> a7628b3cdbc10b91fdfcdbb0084900baa6b4f8f9
 targets:
   5_data_munge:
     depends:
       - 5_data_munge/out/daily_temperatures_summary.csv
       - 5_data_munge/out/all_sites.rds.ind
+<<<<<<< HEAD
 
+=======
+      - 5_data_munge/out/daily_temperatures_qaqc.rds.ind
+      - 5_data_munge/out/flagged_temperature_data.csv
+      - 5_data_munge/out/binned_daily_temperatures_qaqc_summary.csv
+    
+>>>>>>> a7628b3cdbc10b91fdfcdbb0084900baa6b4f8f9
 # -- For WQP and NWISuv, first do a coarse QA, then reduce to daily  -- #
 # -- For NWISdv, do the coarse QA  -- #
 
@@ -30,7 +48,30 @@ targets:
 
   stream_types:
     command: c(I(c('Stream', 'Spring')))
+<<<<<<< HEAD
 
+=======
+  
+  #declaring doy, long, and lat bins values.  
+  doy_lim:
+    command: I(6)
+    
+  long_deg:
+    command: I(1)
+    
+  lat_deg:
+    command: I(1)
+    
+  yard_stick:
+    command: I(5) 
+    
+  lb:
+    command: I(10)  # lower bound
+    
+  ub:
+    command: I(15)  # upper bound  
+    
+>>>>>>> a7628b3cdbc10b91fdfcdbb0084900baa6b4f8f9
   # first, limit to stream data
   5_data_munge/out/wqp_data_streams.rds.ind:
     command: filter_site_types(
@@ -100,3 +141,20 @@ targets:
     command: summarize_all_dat(
       in_ind = '5_data_munge/out/daily_temperatures.rds.ind',
       out_file = target_name)
+  
+  # qaqc the daily temperature data.    
+  5_data_munge/out/daily_temperatures_qaqc.rds.ind:
+    command: qaqc_daily_temp_site_data(
+      temp_in_ind = '5_data_munge/out/daily_temperatures.rds.ind', 
+      site_in_ind = '5_data_munge/out/all_sites.rds.ind',
+      out_ind = target_name)
+      
+  5_data_munge/out/flagged_temperature_data.csv:
+    command: outliers_summary(in_ind = '5_data_munge/out/daily_temperatures_qaqc.rds.ind',
+      out_file = target_name)
+      
+  5_data_munge/out/binned_daily_temperatures_qaqc_summary.csv:
+    command: summary_qaqc_daily_temp_site('5_data_munge/out/daily_temperatures_qaqc.rds.ind',
+      out_file = target_name)
+      
+      
